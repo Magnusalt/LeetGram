@@ -1,0 +1,37 @@
+﻿@page "/"
+@inject ImageHandler _imageHandler;
+
+<InputFile OnChange="OnFileSelectedAsync"/>
+
+@if (_toLargeFileMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+      @_toLargeFileMessage
+    </div>
+}
+
+@if (_base64ResizedImage != null)
+{
+    <img src="@($"{_base64JpegPrefix}{_base64ResizedImage}")">
+}
+
+@code
+{
+    private string _base64ResizedImage;
+    private const string _base64JpegPrefix = "data:image/jpeg;base64, ";
+    private string _toLargeFileMessage;
+    private async Task OnFileSelectedAsync(IFileListEntry[] input)
+    {
+        _toLargeFileMessage = null;
+        var file = input.First();
+        try
+        {
+            var image = await file.ReadAllAsync(4_000_000);
+            _base64ResizedImage = await _imageHandler.Resize(image);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            _toLargeFileMessage = e.Message;
+        }
+    }
+}
