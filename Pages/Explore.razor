@@ -3,37 +3,36 @@
 @inject ISignedIn User
 @implements IDisposable
 
-<div>Find other users</div>
+@if (State.Users.Count == 0)
+{
+    <h4>How sad, no users 😥</h4>
+}
+else if (State.Users.Count == 1 && State.Users.First().Key == User.Name)
+{
+    <h4>Seems like you are the only one here, go tell your friends!</h4>
+}
+else
+{
+    <h4>Check out what others have posted!</h4>
+}
 
-<ul class="list-group">
-    @foreach (var (key, value) in State.Users.Where(kv => kv.Key != User.Name))
-    {
-        <li class="list-group-item">
-            <div class="d-flex">
-                <img src="@value.ProfilePicture" style="height: 30px" alt="">
-                <NavLink class="nav-link" href="@($"feed/{key}")" Match="NavLinkMatch.All">
-                    @key
-                </NavLink>
-            </div>
-        </li>
-    }
-</ul>
+<UnstyledList Items="State.Users.Where(kv => kv.Key != User.Name).Select(i => i.Value)" TItem="User">
+    <ListItemTemplate Context="user">
+        <div class="d-flex">
+            <img src="@user.ProfilePicture" style="height: 30px" alt="">
+            <NavLink class="nav-link" href="@($"feed/{user.Name}")" Match="NavLinkMatch.All">
+                @user.Name
+            </NavLink>
+        </div>
+    </ListItemTemplate>
+</UnstyledList>
 
 @code {
 
-    protected override void OnInitialized()
-    {
-        State.NewUserSignedIn += HandleStateChange;
-    }
+    protected override void OnInitialized() => State.NewUserSignedIn += HandleStateChange;
 
-    private void HandleStateChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
+    private void HandleStateChange() => InvokeAsync(StateHasChanged);
 
-    public void Dispose()
-    {
-        State.NewUserSignedIn -= HandleStateChange;
-    }
+    public void Dispose() => State.NewUserSignedIn -= HandleStateChange;
 
 }
