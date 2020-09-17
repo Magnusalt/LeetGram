@@ -5,27 +5,26 @@
     <img src="@PostData.Image" class="card-img-top" alt="...">
     <div class="card-body">
         <p class="card-text">@PostData.Caption</p>
-        <ul class="list-unstyled">
-            @foreach (var comment in PostData.Comments)
-            {
-                <li class="media border-bottom">
-                    <img src="@State.Users[comment.Username].ProfilePicture" class="mr-3" style="height: 40px">
+        <UnstyledList Items="PostData.Comments.OrderBy(c => c.CommentDate)" TItem="Comment">
+            <ListItemTemplate Context="comment">
+                <div class="d-flex">
+                    <img src="@State.Users[comment.Username].ProfilePicture" class="mr-3" style="height: 40px" alt="">
                     <div class="media-body">
                         <h6 class="mt-2">@comment.Value</h6>
                     </div>
-                </li>
-            }
-            @if (User.IsSignedIn)
-            {
-                <li>
+                </div>
+            </ListItemTemplate>
+            <FooterItem>
+                @if (User.IsSignedIn)
+                {
                     <div class="d-flex mt-4">
                         <img src="@State.Users[User.Name].ProfilePicture" style="height: 30px" alt=""/>
                         <input type="text" class="ml-3" @bind="_comment"/>
                         <button class="btn btn-info btn-sm ml-3" @onclick="AddComment">Comment</button>
                     </div>
-                </li>
-            }
-        </ul>
+                }
+            </FooterItem>
+        </UnstyledList>
     </div>
 </div>
 

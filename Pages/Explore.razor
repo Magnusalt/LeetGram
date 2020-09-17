@@ -6,12 +6,15 @@
 <div>Find other users</div>
 
 <ul class="list-group">
-    @foreach (var item in State.Users.Where(kv => kv.Key != User.Name))
+    @foreach (var (key, value) in State.Users.Where(kv => kv.Key != User.Name))
     {
         <li class="list-group-item">
-            <NavLink class="nav-link" href="@($"feed/{item.Key}")" Match="NavLinkMatch.All">
-                @item.Key
-            </NavLink>
+            <div class="d-flex">
+                <img src="@value.ProfilePicture" style="height: 30px" alt="">
+                <NavLink class="nav-link" href="@($"feed/{key}")" Match="NavLinkMatch.All">
+                    @key
+                </NavLink>
+            </div>
         </li>
     }
 </ul>

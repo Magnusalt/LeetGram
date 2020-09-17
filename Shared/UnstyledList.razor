@@ -1,0 +1,26 @@
+@typeparam TItem
+
+<ul class="list-unstyled">
+    @foreach (var item in Items)
+    {
+        <li class="list-group-item border-0">
+            @ListItemTemplate(item)
+        </li>
+    }
+    <li>
+        @FooterItem
+    </li>
+</ul>
+
+@code {
+
+    [Parameter]
+    public RenderFragment<TItem> ListItemTemplate { get; set; }
+
+    [Parameter]
+    public IOrderedEnumerable<TItem> Items { get; set; }
+
+    [Parameter]
+    public RenderFragment FooterItem { get; set; }
+
+}

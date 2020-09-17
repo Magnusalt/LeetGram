@@ -1,33 +1,20 @@
 ﻿@page "/"
 @inject ISignedIn User
-@inject NavigationManager Nav
 @implements IDisposable
 
-
-@if (!User.IsSignedIn)
-{
-    <SignIn/>
-}
-else
-{
+@if (User.IsSignedIn) {
     <AutoNav NavTarget="@($"feed/{User.Name}")"/>
+} else {
+    <SignIn/>
 }
 
 @code{
-
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() =>
         User.ModelUpdated += HandleUserChange;
-    }
-
-    private void HandleUserChange()
-    {
+    
+    private void HandleUserChange() =>
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
+    
+    public void Dispose() => 
         User.ModelUpdated -= HandleUserChange;
-    }
-
 }

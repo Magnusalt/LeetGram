@@ -18,15 +18,16 @@
             <CreatePost AddPostToUser="AddPost"/>
         </div>
     }
-    <div class="row justify-content-center">
-        <ul class="list-group">
-            @foreach (var item in _displayUser.Posts.OrderByDescending(p => p.PostDate))
-            {
-                <li class="list-group-item">
-                    <PostCard PostData="@item" Owner="@_displayUser.Name"/>
-                </li>
-            }
-        </ul>
+    <div class="row justify-content-center mt-4">
+        @if (_displayUser.Posts.Count == 0)
+        {
+            <h4>There is nothing here yet 😔</h4>
+        }
+        <UnstyledList Items="@_displayUser.Posts.OrderByDescending(p => p.PostDate)" TItem="Post">
+            <ListItemTemplate Context="post">
+                <PostCard PostData="@post" Owner="@_displayUser.Name"/>
+            </ListItemTemplate>
+        </UnstyledList>
     </div>
 </div>
 
@@ -45,7 +46,10 @@
         State.PostsUpdated += OnPostWasAdded;
     }
 
-    private bool MyFeed => User.Name == Username;
+    private bool MyFeed
+    {
+        get => User.Name == Username;
+    }
 
     private User _displayUser;
 
@@ -55,14 +59,8 @@
             InvokeAsync(StateHasChanged);
     }
 
-    private void AddPost(Post post)
-    {
-        State.AddPostToUser(_displayUser, post);
-    }
+    private void AddPost(Post post) => State.AddPostToUser(_displayUser, post);
 
-    public void Dispose()
-    {
-        State.PostsUpdated -= OnPostWasAdded;
-    }
+    public void Dispose() => State.PostsUpdated -= OnPostWasAdded;
 
 }
