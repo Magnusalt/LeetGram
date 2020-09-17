@@ -1,0 +1,36 @@
+@page "/explore"
+@inject ApplicationState State
+@inject ISignedIn User
+@implements IDisposable
+
+<div>Find other users</div>
+
+<ul class="list-group">
+    @foreach (var item in State.Users.Where(kv => kv.Key != User.Name))
+    {
+        <li class="list-group-item">
+            <NavLink class="nav-link" href="@($"feed/{item.Key}")" Match="NavLinkMatch.All">
+                @item.Key
+            </NavLink>
+        </li>
+    }
+</ul>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        State.NewUserSignedIn += HandleStateChange;
+    }
+
+    private void HandleStateChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        State.NewUserSignedIn -= HandleStateChange;
+    }
+
+}

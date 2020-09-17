@@ -1,37 +1,33 @@
 ﻿@page "/"
-@inject ImageHandler _imageHandler;
+@inject ISignedIn User
+@inject NavigationManager Nav
+@implements IDisposable
 
-<InputFile OnChange="OnFileSelectedAsync"/>
 
-@if (_toLargeFileMessage != null)
+@if (!User.IsSignedIn)
 {
-    <div class="alert alert-danger" role="alert">
-      @_toLargeFileMessage
-    </div>
+    <SignIn/>
+}
+else
+{
+    <AutoNav NavTarget="@($"feed/{User.Name}")"/>
 }
 
-@if (_base64ResizedImage != null)
-{
-    <img src="@($"{_base64JpegPrefix}{_base64ResizedImage}")">
-}
+@code{
 
-@code
-{
-    private string _base64ResizedImage;
-    private const string _base64JpegPrefix = "data:image/jpeg;base64, ";
-    private string _toLargeFileMessage;
-    private async Task OnFileSelectedAsync(IFileListEntry[] input)
+    protected override void OnInitialized()
     {
-        _toLargeFileMessage = null;
-        var file = input.First();
-        try
-        {
-            var image = await file.ReadAllAsync(4_000_000);
-            _base64ResizedImage = await _imageHandler.Resize(image);
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            _toLargeFileMessage = e.Message;
-        }
+        User.ModelUpdated += HandleUserChange;
     }
+
+    private void HandleUserChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        User.ModelUpdated -= HandleUserChange;
+    }
+
 }

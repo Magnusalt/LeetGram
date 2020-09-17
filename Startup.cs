@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using LeetGram.Services;
+using LeetGram.State;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ImageResizer.Services;
 
-namespace ImageResizer
+namespace LeetGram
 {
     public class Startup
     {
@@ -27,20 +23,18 @@ namespace ImageResizer
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<ImageHandler>();
+            services.AddSingleton<ImageHandler>();
+            services.AddSingleton<ApplicationState>();
+            services.AddScoped<ISignedIn, User>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
                 app.UseExceptionHandler("/Error");
-            }
 
             app.UseStaticFiles();
 

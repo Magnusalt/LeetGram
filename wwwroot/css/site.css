@@ -117,6 +117,19 @@ app {
     color: red;
 }
 
+.circle-icon {
+    color: cornsilk;
+    background: #c0ffc0;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    padding: 15px;
+}
+
+.circle-icon:hover{
+    background: darkgreen;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

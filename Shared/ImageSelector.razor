@@ -1,0 +1,69 @@
+@inject ImageHandler ImageHandler;
+
+<div class="custom-file">
+    <InputFile class="custom-file-input" OnChange="OnFileSelectedAsync"/>
+    <label class="custom-file-label">Choose file</label>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="d-flex flex-column justify-content-center" style="height: 400px;">
+
+        @if (_loading)
+        {
+            <div class="spinner-border" role="status">
+            </div>
+        }
+
+
+        @if (_tooLargeFileMessage != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @_tooLargeFileMessage
+            </div>
+        }
+
+        @if (Base64ResizedImage != null)
+        {
+            <img src="@Base64ResizedImage" alt="">
+        }
+    </div>
+</div>
+
+@code{
+
+    private const string Base64JpegPrefix = "data:image/jpeg;base64, ";
+
+    [Parameter]
+    public string Base64ResizedImage { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Base64ResizedImageChanged { get; set; }
+
+    private string _tooLargeFileMessage;
+
+    private bool _loading;
+
+    private async Task OnFileSelectedAsync(IFileListEntry[] input)
+    {
+        _tooLargeFileMessage = null;
+        _loading = true;
+        var file = input.First();
+        try
+        {
+            var image = await file.ReadAllAsync(4_000_000);
+            var base64Encoded = await ImageHandler.Resize(image);
+            Base64ResizedImage = $"{Base64JpegPrefix}{base64Encoded}";
+            await Base64ResizedImageChanged.InvokeAsync(Base64ResizedImage);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            _tooLargeFileMessage = e.Message;
+        }
+        catch (Exception e)
+        {
+            _tooLargeFileMessage = e.Message;
+        }
+        await InvokeAsync(() => _loading = false);
+    }
+
+}

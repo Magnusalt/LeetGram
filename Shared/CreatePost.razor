@@ -1,0 +1,54 @@
+@if (_isExpanded)
+{
+    <div class="card text-center" style="width: 400px;">
+        <ImageSelector @bind-Base64ResizedImage="_selectedImage"/>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Add a caption</h6>
+            <input type="text" class="form-control my-3" @bind="_caption"/>
+            <button class="btn btn-secondary card-link" @onclick="Cancel">Cancel</button>
+            <button class="btn btn-primary card-link" disabled="@PostDisabled" @onclick="Post">Post</button>
+        </div>
+    </div>
+}
+else
+{
+    <span>
+        <span class="oi oi-plus circle-icon" aria-hidden="true" @onclick="Expand"></span>
+    </span>
+}
+
+
+@code{
+
+    [Parameter]
+    public Action<Post> AddPostToUser { get; set; }
+
+    private bool _isExpanded;
+
+    private string _caption;
+
+    private string _selectedImage;
+
+    private bool PostDisabled => string.IsNullOrEmpty(_selectedImage) || string.IsNullOrEmpty(_caption);
+
+    private void Expand()
+    {
+        _isExpanded = true;
+    }
+
+    private void Cancel()
+    {
+        _isExpanded = false;
+    }
+
+    private void Post()
+    {
+        var post = new Post {Caption = _caption, Image = _selectedImage, PostDate = DateTime.Now};
+        AddPostToUser(post);
+
+        _isExpanded = false;
+        _caption = string.Empty;
+        _selectedImage = string.Empty;
+    }
+
+}

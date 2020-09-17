@@ -1,0 +1,18 @@
+@inject ApplicationState State
+@inject ISignedIn User
+
+<div class="form-group" style="width: 18rem;">
+    <label>Username</label>
+    <input @bind="_userName" class="form-control"/>
+    <button class="btn btn-primary my-4" @onclick="HandleSubmit">Log in</button>
+</div>
+
+@code {
+    private string _userName;
+
+    private void HandleSubmit()
+    {
+        State.SignInUser(_userName, User);
+    }
+
+}

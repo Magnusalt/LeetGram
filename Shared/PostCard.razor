@@ -1,0 +1,50 @@
+@inject ISignedIn User
+@inject ApplicationState State
+
+<div class="card my-2" style="width: 400px;">
+    <img src="@PostData.Image" class="card-img-top" alt="...">
+    <div class="card-body">
+        <p class="card-text">@PostData.Caption</p>
+        <ul class="list-unstyled">
+            @foreach (var comment in PostData.Comments)
+            {
+                <li class="media border-bottom">
+                    <img src="@State.Users[comment.Username].ProfilePicture" class="mr-3" style="height: 40px">
+                    <div class="media-body">
+                        <h6 class="mt-2">@comment.Value</h6>
+                    </div>
+                </li>
+            }
+            @if (User.IsSignedIn)
+            {
+                <li>
+                    <div class="d-flex mt-4">
+                        <img src="@State.Users[User.Name].ProfilePicture" style="height: 30px" alt=""/>
+                        <input type="text" class="ml-3" @bind="_comment"/>
+                        <button class="btn btn-info btn-sm ml-3" @onclick="AddComment">Comment</button>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Post PostData { get; set; }
+
+    [Parameter]
+    public string Owner { get; set; }
+
+    private string _comment;
+
+    private void AddComment()
+    {
+        var comment = new Comment {CommentDate = DateTime.Now, Username = User.Name, Value = _comment};
+        State.AddComment(Owner, PostData.Id, comment);
+
+        _comment = string.Empty;
+    }
+
+}
